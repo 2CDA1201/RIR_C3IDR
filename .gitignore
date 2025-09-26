@@ -1,7 +1,7 @@
 .vscode/
 .venv/
 build/
-*.code-workspace
-
 cidr/
 data/
+
+*.code-workspace
