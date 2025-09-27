@@ -1,6 +1,6 @@
 CXX = g++
-CXXFLAGS = -O2 -I include
-DEBUGFLAGS = -g -Og -I include
+CXXFLAGS = -O2 -masm=intel -std=c++23 -I include
+DEBUGFLAGS = -g -Og -std=c++23 -I include
 
 SRC = main.cpp src/buffered_reader.cpp src/ip_utils.cpp
 
