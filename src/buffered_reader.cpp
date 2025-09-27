@@ -15,8 +15,7 @@ BufferedReader::BufferedReader(std::ifstream& s)
     fill_buffer();
 }
 
-bool BufferedReader::getline(const char*& line_start,
-    size_t& line_len) noexcept
+bool BufferedReader::getline(const char*& line_start, size_t& line_len) noexcept
 {
     if (buffer_pos >= buffer_end && eof_reached)
         return false;

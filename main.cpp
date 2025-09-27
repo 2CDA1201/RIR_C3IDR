@@ -99,8 +99,7 @@ int main()
                 // IPv4 Fast processing
                 const uint32_t block_count = fast_atoi(fields[4].ptr, fields[4].ptr + fields[4].len);
 
-                fast_cidr_decompose(fout4, fields[1].ptr, fields[1].len, fields[3].ptr,
-                    fields[3].len, block_count);
+                fast_cidr_decompose(fout4, fields[1].ptr, fields[1].len, fields[3].ptr, fields[3].len, block_count);
             } else if (line[version_pos] == '6') {
                 // IPv6 direct write (no decomposition needed)
                 fout6.write(fields[1].ptr, fields[1].len);
