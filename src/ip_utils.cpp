@@ -21,67 +21,23 @@ static constexpr char SINGLE_DIGITS[10] = {'0', '1', '2', '3', '4',
                                            '5', '6', '7', '8', '9'};
 
 void fast_ip_to_str(uint32_t ip, char *__restrict__ buf) noexcept {
-  // 各オクテットを抽出
-  const uint32_t o1 = (ip >> 24) & 0xFF;
-  const uint32_t o2 = (ip >> 16) & 0xFF;
-  const uint32_t o3 = (ip >> 8) & 0xFF;
-  const uint32_t o4 = ip & 0xFF;
+  const uint32_t octets[4] = {(ip >> 24) & 0xFF, (ip >> 16) & 0xFF,
+                              (ip >> 8) & 0xFF, ip & 0xFF};
 
   char *p = buf;
-
-  // 第一オクテット
-  if (o1 >= 100) {
-    *p++ = '0' + (o1 / 100);
-    const uint32_t rem = o1 % 100;
+  for (const auto &[i, o] : std::views::enumerate(octets)) {
+    if (o >= 100) {
+      *p++ = '0' + (o / 100);
+      const uint32_t rem = o % 100;
     *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[rem * 2]);
     p += 2;
-  } else if (o1 >= 10) {
-    *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[o1 * 2]);
+    } else if (o >= 10) {
+      *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[o * 2]);
     p += 2;
   } else {
-    *p++ = SINGLE_DIGITS[o1];
+      *p++ = SINGLE_DIGITS[o];
   }
-  *p++ = '.';
-
-  // 第二オクテット
-  if (o2 >= 100) {
-    *p++ = '0' + (o2 / 100);
-    const uint32_t rem = o2 % 100;
-    *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[rem * 2]);
-    p += 2;
-  } else if (o2 >= 10) {
-    *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[o2 * 2]);
-    p += 2;
-  } else {
-    *p++ = SINGLE_DIGITS[o2];
-  }
-  *p++ = '.';
-
-  // 第三オクテット
-  if (o3 >= 100) {
-    *p++ = '0' + (o3 / 100);
-    const uint32_t rem = o3 % 100;
-    *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[rem * 2]);
-    p += 2;
-  } else if (o3 >= 10) {
-    *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[o3 * 2]);
-    p += 2;
-  } else {
-    *p++ = SINGLE_DIGITS[o3];
-  }
-  *p++ = '.';
-
-  // 第四オクテット
-  if (o4 >= 100) {
-    *p++ = '0' + (o4 / 100);
-    const uint32_t rem = o4 % 100;
-    *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[rem * 2]);
-    p += 2;
-  } else if (o4 >= 10) {
-    *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[o4 * 2]);
-    p += 2;
-  } else {
-    *p++ = SINGLE_DIGITS[o4];
+    if (i != 3) *p++ = '.';
   }
   *p = '\0';
 }
