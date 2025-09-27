@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -O2 -I include
-DEBUGFLAGS = -g -O0 -I include
+DEBUGFLAGS = -g -Og -I include
 
 SRC = main.cpp src/buffered_reader.cpp src/ip_utils.cpp
 OUT = build\Run\main.exe
