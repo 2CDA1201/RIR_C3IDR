@@ -1,6 +1,6 @@
 #include "ip_utils.hpp"
 
-// Precomputed lookup tables for maximum speed
+// 事前に計算された2桁のLUT
 static constexpr char DIGIT_PAIRS[200] = {
     '0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6', '0',
     '7', '0', '8', '0', '9', '1', '0', '1', '1', '1', '2', '1', '3', '1', '4',
@@ -30,14 +30,14 @@ void fast_ip_to_str(uint32_t ip, char *__restrict__ buf) noexcept {
     if (o >= 100) {
       *p++ = '0' + (o / 100);
       const uint32_t rem = o % 100;
-    *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[rem * 2]);
-    p += 2;
+      *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[rem * 2]);
+      p += 2;
     } else if (o >= 10) {
       *((uint16_t *)p) = *((uint16_t *)&DIGIT_PAIRS[o * 2]);
-    p += 2;
-  } else {
+      p += 2;
+    } else {
       *p++ = SINGLE_DIGITS[o];
-  }
+    }
     if (i != 3) *p++ = '.';
   }
   *p = '\0';
@@ -49,7 +49,8 @@ uint32_t fast_atoi(const char *__restrict__ str,
   while (str < end) {
     const char c = *str++;  // 現在の文字を取得し、ポインタを進める
     if (c >= '0' && c <= '9') {
-      result = (result << 3) + (result << 1) + (c - '0'); // result * 10 + digit
+      result =
+          (result << 3) + (result << 1) + (c - '0');  // result * 10 + digit
     } else {
       break;
     }
@@ -119,8 +120,7 @@ void fast_cidr_decompose(std::ofstream &__restrict__ out,
 
     const uint32_t leading_zeros = __builtin_clz(remaining);
     uint32_t max_size = 1U << (31 - leading_zeros);
-    if (max_size > remaining)
-      max_size >>= 1;
+    if (max_size > remaining) max_size >>= 1;
 
     const uint32_t block_size =
         (max_aligned < max_size) ? max_aligned : max_size;

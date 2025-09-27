@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <iostream>
 
-
 #include "buffered_reader.hpp"
 #include "ip_utils.hpp"
 
@@ -10,7 +9,7 @@ namespace chrono = std::chrono;
 
 int main() {
   // Large output buffers
-  static constexpr size_t OUT_BUFFER_SIZE = 2 * 1024 * 1024; // 2MB
+  static constexpr size_t OUT_BUFFER_SIZE = 2 * 1024 * 1024;  // 2MB
   alignas(64) static char out4_buffer[OUT_BUFFER_SIZE];
   alignas(64) static char out6_buffer[OUT_BUFFER_SIZE];
 
@@ -30,8 +29,7 @@ int main() {
   // Process files sequentially for better cache behavior
   for (const auto &entry : std::filesystem::directory_iterator("data")) {
     std::ifstream fin(entry.path(), std::ios::binary);
-    if (!fin)
-      continue;
+    if (!fin) continue;
 
     BufferedReader reader(fin);
     const char *line;
@@ -41,8 +39,7 @@ int main() {
 
     // Fast header processing
     while (reader.getline(line, line_len)) {
-      if (line_len == 0)
-        continue;
+      if (line_len == 0) continue;
 
       const char first = line[0];
       if (first == '#') {
@@ -78,23 +75,19 @@ int main() {
 
     // Process data records with Fast parsing
     do {
-      if (line_len == 0)
-        continue;
+      if (line_len == 0) continue;
 
       // Fast type detection
       const size_t type_pos = region_len + 4;
-      if (type_pos >= line_len || line[type_pos] == 'a')
-        continue;
+      if (type_pos >= line_len || line[type_pos] == 'a') continue;
 
       const size_t version_pos = region_len + 7;
-      if (version_pos >= line_len)
-        continue;
+      if (version_pos >= line_len) continue;
 
       // Parse fields fast
       FieldPos fields[8];
       const size_t field_count = fast_parse_fields(line, line_len, fields, 8);
-      if (field_count < 5)
-        continue;
+      if (field_count < 5) continue;
 
       if (line[version_pos] == '4') {
         // IPv4 Fast processing
