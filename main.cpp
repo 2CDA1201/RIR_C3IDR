@@ -2,14 +2,14 @@
 #include <filesystem>
 #include <chrono>
 
-#include "ultra_buffered_reader.hpp"
+#include "buffered_reader.hpp"
 #include "ip_utils.hpp"
 
 namespace chrono = std::chrono;
 
 int main()
 {
-    // Ultra-large output buffers
+    // Large output buffers
     static constexpr size_t OUT_BUFFER_SIZE = 2 * 1024 * 1024; // 2MB
     alignas(64) static char out4_buffer[OUT_BUFFER_SIZE];
     alignas(64) static char out6_buffer[OUT_BUFFER_SIZE];
@@ -35,13 +35,13 @@ int main()
         if (!fin)
             continue;
 
-        UltraBufferedReader reader(fin);
+        BufferedReader reader(fin);
         const char *line;
         size_t line_len;
         size_t region_len = 0;
         int header_count = 0;
 
-        // Ultra-fast header processing
+        // Fast header processing
         while (reader.getline(line, line_len))
         {
             if (line_len == 0)
@@ -85,13 +85,13 @@ int main()
             break;
         }
 
-        // Process data records with ultra-fast parsing
+        // Process data records with Fast parsing
         do
         {
             if (line_len == 0)
                 continue;
 
-            // Ultra-fast type detection
+            // Fast type detection
             const size_t type_pos = region_len + 4;
             if (type_pos >= line_len || line[type_pos] == 'a')
                 continue;
@@ -100,7 +100,7 @@ int main()
             if (version_pos >= line_len)
                 continue;
 
-            // Parse fields ultra-fast
+            // Parse fields fast
             FieldPos fields[8];
             const size_t field_count = fast_parse_fields(line, line_len, fields, 8);
             if (field_count < 5)
@@ -108,7 +108,7 @@ int main()
 
             if (line[version_pos] == '4')
             {
-                // IPv4 ultra-fast processing
+                // IPv4 Fast processing
                 const uint32_t block_count = fast_atoi(fields[4].ptr, fields[4].ptr + fields[4].len);
 
                 fast_cidr_decompose(fout4,

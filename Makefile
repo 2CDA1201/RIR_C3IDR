@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -O2 -I include
 DEBUGFLAGS = -g -O0 -I include
 
-SRC = main.cpp src/ultra_buffered_reader.cpp src/ip_utils.cpp
+SRC = main.cpp src/buffered_reader.cpp src/ip_utils.cpp
 OUT = build\Run\main.exe
 DEBUGOUT = build\Debug\main.exe
 

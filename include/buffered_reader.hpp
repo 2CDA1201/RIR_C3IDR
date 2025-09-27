@@ -1,7 +1,7 @@
 #pragma once
 #include <fstream>
 
-class UltraBufferedReader
+class BufferedReader
 {
 private:
     static constexpr size_t BUFFER_SIZE = 1024 * 1024; // 1MB buffer
@@ -14,6 +14,6 @@ private:
     void fill_buffer() noexcept;
 
 public:
-    explicit UltraBufferedReader(std::ifstream &s);
+    explicit BufferedReader(std::ifstream &s);
     bool getline(const char *&line_start, size_t &line_len) noexcept;
 };

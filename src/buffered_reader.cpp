@@ -1,6 +1,6 @@
-#include "ultra_buffered_reader.hpp"
+#include "buffered_reader.hpp"
 
-void UltraBufferedReader::fill_buffer() noexcept
+void BufferedReader::fill_buffer() noexcept
 {
     stream.read(buffer, BUFFER_SIZE);
     buffer_end = stream.gcount();
@@ -9,12 +9,12 @@ void UltraBufferedReader::fill_buffer() noexcept
         eof_reached = true;
 }
 
-UltraBufferedReader::UltraBufferedReader(std::ifstream &s) : stream(s)
+BufferedReader::BufferedReader(std::ifstream &s) : stream(s)
 {
     fill_buffer();
 }
 
-bool UltraBufferedReader::getline(const char *&line_start, size_t &line_len) noexcept
+bool BufferedReader::getline(const char *&line_start, size_t &line_len) noexcept
 {
     if (buffer_pos >= buffer_end && eof_reached)
         return false;

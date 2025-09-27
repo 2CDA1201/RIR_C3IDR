@@ -195,7 +195,7 @@ void fast_cidr_decompose(std::ofstream &__restrict__ out,
         const uint32_t block_size = (max_aligned < max_size) ? max_aligned : max_size;
         const uint8_t prefix = 32 - (31 - __builtin_clz(block_size));
 
-        // Convert IP to string using ultra-fast method
+        // Convert IP to string using fast method
         char ip_buffer[16];
         fast_ip_to_str(current_ip, ip_buffer);
 
@@ -204,7 +204,7 @@ void fast_cidr_decompose(std::ofstream &__restrict__ out,
         out.put(',');
         out << ip_buffer << '/';
 
-        // Ultra-fast prefix writing
+        // Fast prefix writing
         if (prefix >= 10)
         {
             out.put('0' + (prefix / 10));
