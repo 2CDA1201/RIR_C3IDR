@@ -17,6 +17,7 @@ static constexpr char DIGIT_PAIRS[200] = {
     '9', '0', '9', '1', '9', '2', '9', '3', '9', '4', '9', '5', '9', '6', '9',
     '7', '9', '8', '9', '9'};
 
+// 1桁のLUT
 static constexpr char SINGLE_DIGITS[10] = {'0', '1', '2', '3', '4',
                                            '5', '6', '7', '8', '9'};
 
@@ -46,7 +47,7 @@ uint32_t fast_atoi(const char *__restrict__ str,
                    const char *__restrict__ end) noexcept {
   uint32_t result = 0;
   while (str < end) {
-    const char c = *str++;
+    const char c = *str++;  // 現在の文字を取得し、ポインタを進める
     if (c >= '0' && c <= '9') {
       result = (result << 3) + (result << 1) + (c - '0'); // result * 10 + digit
     } else {
@@ -70,7 +71,7 @@ uint32_t fast_ip_to_int(const char *__restrict__ ip_str, size_t len) noexcept {
     }
     result |= (octet << shift);
     shift -= 8;
-    ++p; // skip dot
+    ++p;  // ピリオドをスキップ
   }
   return result;
 }
