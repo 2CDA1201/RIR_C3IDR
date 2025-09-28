@@ -1,4 +1,4 @@
-#include "buffered_reader.hpp"
+﻿#include "buffered_reader.hpp"
 
 void BufferedReader::fill_buffer() noexcept
 {

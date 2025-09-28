@@ -1,14 +1,28 @@
-#include <chrono>
+﻿#include <chrono>
 #include <filesystem>
 #include <iostream>
 
 #include "buffered_reader.hpp"
 #include "ip_utils.hpp"
+#include "rir_fetcher.hpp"
 
 namespace chrono = std::chrono;
 
 int main()
 {
+    try {
+        std::cout << "RIR Data Fetcher starting..." << std::endl;
+
+        RIRFetcher fetcher;
+        fetcher.fetch_all();
+
+        std::cout << "Fetching RIR data completed." << std::endl;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Fatal error: " << e.what() << std::endl;
+        return 1;
+    }
+
     // Large output buffers
     static constexpr size_t OUT_BUFFER_SIZE = 2 * 1024 * 1024; // 2MB
     alignas(64) static char out4_buffer[OUT_BUFFER_SIZE];
@@ -89,19 +103,19 @@ int main()
             if (version_pos >= line_len)
                 continue;
 
-            // Parse fields fast
+            // レコードをフィールドに分割
             FieldPos fields[8];
-            const size_t field_count = fast_parse_fields(line, line_len, fields, 8);
+            const size_t field_count = fast_parse_record(line, line_len, fields, 8);
             if (field_count < 5)
                 continue;
 
             if (line[version_pos] == '4') {
-                // IPv4 Fast processing
+                // IPv4はCIDRに変換して出力
                 const uint32_t block_count = fast_atoi(fields[4].ptr, fields[4].ptr + fields[4].len);
 
                 fast_cidr_decompose(fout4, fields[1].ptr, fields[1].len, fields[3].ptr, fields[3].len, block_count);
             } else if (line[version_pos] == '6') {
-                // IPv6 direct write (no decomposition needed)
+                // IPv6はCIDR表記なのでそのまま出力
                 fout6.write(fields[1].ptr, fields[1].len);
                 fout6.put(',');
                 fout6.write(fields[3].ptr, fields[3].len);
