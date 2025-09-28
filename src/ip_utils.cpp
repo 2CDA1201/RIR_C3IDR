@@ -1,6 +1,8 @@
 ﻿#include "ip_utils.hpp"
+#include "bit_utils.hpp"
 
-// 事前に計算された2桁のLUT
+// n, n+1でペアの2桁数字リテラルのLUT // リトルエンディアン専用
+#if defined(__LITTLE_ENDIAN__) || defined(_WIN32)
 static constexpr char DIGIT_PAIRS[200] = {
     '0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6', '0',
     '7', '0', '8', '0', '9', '1', '0', '1', '1', '1', '2', '1', '3', '1', '4',
@@ -17,32 +19,41 @@ static constexpr char DIGIT_PAIRS[200] = {
     '9', '0', '9', '1', '9', '2', '9', '3', '9', '4', '9', '5', '9', '6', '9',
     '7', '9', '8', '9', '9'
 };
-
-// 1桁のLUT
-static constexpr char SINGLE_DIGITS[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+#endif
 
 void fast_ip_to_str(uint32_t ip, char* RESTRICT buf) noexcept
 {
-    const uint32_t octets[4] = { (ip >> 24) & 0xFF, (ip >> 16) & 0xFF,
-        (ip >> 8) & 0xFF, ip & 0xFF };
+    const uint8_t octets[4] = {
+        static_cast<uint8_t>((ip >> 24) & 0xFF),
+        static_cast<uint8_t>((ip >> 16) & 0xFF),
+        static_cast<uint8_t>((ip >> 8) & 0xFF),
+        static_cast<uint8_t>(ip & 0xFF)
+    };
 
     char* p = buf;
     for (const auto& [i, o] : std::views::enumerate(octets)) {
         if (o >= 100) {
+            // 3桁数字処理: 百の位を直接計算
             *p++ = '0' + (o / 100);
-            const uint32_t rem = o % 100;
+            const uint8_t rem = o % 100;
+
+            // LUT: 2桁数字ペアを事前計算済みテーブルから取得
+            // 例(96): DIGIT_PAIRS[96*2] = '9', DIGIT_PAIRS[96*2+1] = '6' → "96"
+            // 16bit一括書き込み: 2文字を1回のメモリ操作で高速処理
             *((uint16_t*)p) = *((uint16_t*)&DIGIT_PAIRS[rem * 2]);
             p += 2;
         } else if (o >= 10) {
+            // 2桁数字処理: 3桁の時の2桁目以降と同様にLUT参照
             *((uint16_t*)p) = *((uint16_t*)&DIGIT_PAIRS[o * 2]);
             p += 2;
         } else {
-            *p++ = SINGLE_DIGITS[o];
+            *p++ = '0' + o;
         }
+
         if (i != 3)
             *p++ = '.';
     }
-    *p = '\0';
+    *p = '\0'; // 文字列終端
 }
 
 uint32_t fast_atoi(const char* RESTRICT str, const char* RESTRICT end) noexcept
