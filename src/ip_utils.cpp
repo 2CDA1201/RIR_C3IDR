@@ -1,4 +1,4 @@
-#include "ip_utils.hpp"
+﻿#include "ip_utils.hpp"
 
 // 事前に計算された2桁のLUT
 static constexpr char DIGIT_PAIRS[200] = {
@@ -114,16 +114,16 @@ void fast_cidr_decompose(std::ofstream& __restrict__ out, const char* __restrict
 
     while (remaining > 0) {
         // Get max block size using bit manipulation
-        const uint32_t trailing_zeros = current_ip ? __builtin_ctz(current_ip) : 32;
+        const uint32_t trailing_zeros = current_ip ? bit::count_trailing_zeros(current_ip) : 32;
         const uint32_t max_aligned = 1U << trailing_zeros;
 
-        const uint32_t leading_zeros = __builtin_clz(remaining);
+        const uint32_t leading_zeros = bit::count_leading_zeros(remaining);
         uint32_t max_size = 1U << (31 - leading_zeros);
         if (max_size > remaining)
             max_size >>= 1;
 
         const uint32_t block_size = (max_aligned < max_size) ? max_aligned : max_size;
-        const uint8_t prefix = 32 - (31 - __builtin_clz(block_size));
+        const uint8_t prefix = static_cast<uint8_t>(32 - (31 - bit::count_leading_zeros(block_size)));
 
         // Convert IP to string using fast method
         char ip_buffer[16];
