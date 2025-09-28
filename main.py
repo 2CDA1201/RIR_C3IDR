@@ -31,10 +31,12 @@ RIR_DICT = {
     },
 }
 
+
 async def fetch(session, url):
     async with session.get(url) as response:
         response.raise_for_status()
         return await response.read()
+
 
 async def fetch_rir(session, region):
     base_url = region["base_url"]
@@ -75,9 +77,10 @@ async def fetch_rir(session, region):
     except Exception as e:
         print(f"Error accessing {base_url}: {str(e)}")
 
+
 async def main():
     os.makedirs("data", exist_ok=True)
-    
+
     timeout = aiohttp.ClientTimeout(total=60)
     async with aiohttp.ClientSession(timeout=timeout) as session:
         tasks = [fetch_rir(session, stats) for stats in RIR_DICT.values()]
