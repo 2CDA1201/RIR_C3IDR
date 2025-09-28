@@ -21,7 +21,7 @@ static constexpr char DIGIT_PAIRS[200] = {
 // 1桁のLUT
 static constexpr char SINGLE_DIGITS[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-void fast_ip_to_str(uint32_t ip, char* __restrict__ buf) noexcept
+void fast_ip_to_str(uint32_t ip, char* RESTRICT buf) noexcept
 {
     const uint32_t octets[4] = { (ip >> 24) & 0xFF, (ip >> 16) & 0xFF,
         (ip >> 8) & 0xFF, ip & 0xFF };
@@ -45,7 +45,7 @@ void fast_ip_to_str(uint32_t ip, char* __restrict__ buf) noexcept
     *p = '\0';
 }
 
-uint32_t fast_atoi(const char* __restrict__ str, const char* __restrict__ end) noexcept
+uint32_t fast_atoi(const char* RESTRICT str, const char* RESTRICT end) noexcept
 {
     uint32_t result = 0;
     while (str < end) {
@@ -59,7 +59,7 @@ uint32_t fast_atoi(const char* __restrict__ str, const char* __restrict__ end) n
     return result;
 }
 
-uint32_t fast_ip_to_int(const char* __restrict__ ip_str, size_t len) noexcept
+uint32_t fast_ip_to_int(const char* RESTRICT ip_str, size_t len) noexcept
 {
     const char* end = ip_str + len;
     const char* p = ip_str;
@@ -79,7 +79,7 @@ uint32_t fast_ip_to_int(const char* __restrict__ ip_str, size_t len) noexcept
     return result;
 }
 
-size_t fast_parse_fields(const char* __restrict__ line, size_t line_len, FieldPos* __restrict__ fields, size_t max_fields) noexcept
+size_t fast_parse_record(const char* RESTRICT line, size_t line_len, FieldPos* RESTRICT fields, size_t max_fields) noexcept
 {
     const char* p = line;
     const char* end = line + line_len;
@@ -107,7 +107,7 @@ size_t fast_parse_fields(const char* __restrict__ line, size_t line_len, FieldPo
     return field_count;
 }
 
-void fast_cidr_decompose(std::ofstream& __restrict__ out, const char* __restrict__ country, size_t country_len, const char* __restrict__ ip_str, size_t ip_len, uint32_t total_hosts) noexcept
+void fast_cidr_decompose(std::ofstream& RESTRICT out, const char* RESTRICT country, size_t country_len, const char* RESTRICT ip_str, size_t ip_len, uint32_t total_hosts) noexcept
 {
     uint32_t current_ip = fast_ip_to_int(ip_str, ip_len);
     uint32_t remaining = total_hosts;
